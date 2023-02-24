@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tic Tac Toe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            text-align: center;
+            padding: none;
+            margin: none;
+            color:linen;
+            background-color: blueviolet;
+            font-family: arial;
+        }
+
+        .board {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .header2 {
+            margin-left: auto;
+            margin-right: auto;
+            display: inline-block;
+
+        }
+
+        #turnInfo {
+            text-align: center;
+        }
+
+        #gameContainer {
+            display:flex;
+            flex-wrap: wrap;
+            height: 300px;
+            width:300px; 
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #gameContainer div {
+            display: flex;
+            font-size: 50pt;
+            box-sizing: border-box;
+            justify-content: center;
+            border:1px solid;
+            color: linen;
+            background-color: blue;
+            width: 100px;
+            height: 100px;
+            padding: 5px;
+        }
+
+        .playbutton input {
+            background-color:linen;
+            color: blue;
+            font-family: arial;
+            font-size: large;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Tic Tac Toe</h1>
+    </header>
+    <section>
+        <div class="header2">
+            <h3 id="turnInfo"></h3>
+        </div>
+        <div id="gameContainer">
+        </div>
+        <br>
+        <div class="playbutton">
+            <input type="button" value="Play again!" onclick="restart()">
+        </div>
+    </section>
+    <script>
+        const gameInfo = document.getElementById("turnInfo");
+        console.log(gameInfo);
+        let activeGame = true;
+        var currentPlayer = "X";
+        var players = ["X", "O"];
+        let currentGame = ["", "", "", "", "", "", "", "", ""];
+
+        const winningMessage = () => "Player " + currentPlayer + " has won!";
+        const drawMessage = () => "Game ended in a draw!";
+        const currentPlayerTurn = () => "It's Player " + currentPlayer + "'s turn!";
+
+        // creates the display board using a loop
+        function makeBoard() {
+            var boardGame = document.getElementById("gameContainer");
+            for (let i = 0; i < 9; i++) {
+                boardGame.innerHTML += "<div id ='" + i + "' onclick='mark(this)'</div>"
+            }
+        }
+
+        makeBoard();
+
+        // switches the player turns
+        const switchPlayer = () => {
+            if (currentPlayer === players[0]) {
+                currentPlayer = players[1];
+            } else {
+                currentPlayer = players[0];
+            }
+            gameInfo.innerHTML = currentPlayerTurn();
+            
+        };
+
+        // marks the literal display board
+        function mark(clickedOn) {
+            // clickedOn will return the whole line of html
+            // clickedBoxIndex will get the int value from the ID
+            var displayAddress = clickedOn.getAttribute("id");
+            var clickedBoxIndex = parseInt(displayAddress);
+
+            // check whether the call has already been played, 
+            // or if the game is inactive. this ignores the click.
+            if (currentGame[clickedBoxIndex] !== "" || !activeGame) {
+                return;
+            } 
+
+            // stores the turn into the game array
+            currentGame[clickedBoxIndex] = currentPlayer;
+            
+            // displays the turn on the visual board
+            document.getElementById(displayAddress).innerHTML = currentPlayer;
+            checkWin();
+        }
+
+        // checks for a win after a player marks the board; if there is no win
+        // it checks for a draw, and if there is no draw, the turn starts again
+        function checkWin() {
+            let won = false;
+            console.log(currentPlayer);
+            console.log(players);
+            const winningConditions = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6]
+            ];
+
+            // checks if the the positions of winState are all the same move
+            for (let winState of winningConditions) {
+                const [p1, p2, p3] = winState;
+                if (currentGame[p1] !== "" &&
+                    currentGame[p1] === currentGame[p2] &&
+                    currentGame[p1] === currentGame[p3]) {
+                    gameInfo.innerHTML = winningMessage();
+                    won = true;
+                    activeGame = false;
+                }
+            }
+            
+            if (!won) {
+                var draw = !currentGame.includes("");
+                if (draw) {
+                    gameInfo.innerHTML = drawMessage();
+                    activeGame = false;
+                } else {
+                    switchPlayer();
+                }
+            }
+            }
+
+        // clears out the innerHTML of the board
+        function clearBoard() {
+            for (let i = 0; i < 9; i++) {
+                document.getElementById(i).innerHTML = "";
+            }
+        }
+
+        // restarts the game for the play again! button
+        function restart() {
+            activeGame = true;
+            clearBoard();
+            gameState = ["", "", "", "", "", "", "", "", ""];
+            gameInfo.innerHTML = currentPlayerTurn();
+        }
+
+    </script>
+</body>
+</html>
